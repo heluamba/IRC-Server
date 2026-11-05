@@ -69,7 +69,8 @@ class ChannelDomain
 
 		bool		isChannelInviteOnly(const std::string &channelName);
 		bool		isChannelTopicModeOn(const std::string &channelName);
-		bool		isChannelExistent(const std::string &channelName) const;
+		bool		isChannelExistent(const std::string &channelName);
+		bool		isChannelEmpty(const std::string &channelName);
 		bool		isChannelMember(Client *client, const std::string &channelName);
 		bool		isOperatorMember(Client *client, const std::string &channelName);
 

@@ -158,6 +158,12 @@ static std::string UnknownMode(const Client &client,
 								   		const std::string &channel,
 										const char &mode);
 
+
+static std::string userDontMatch(const Client &client,
+						  const std::string &server);
+
+
 };
+
 
 #endif

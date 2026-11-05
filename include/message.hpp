@@ -1,6 +1,6 @@
 #ifndef MESSAGE_HPP
 #define MESSAGE_HPP
-#define CMD_NUMBERS 11
+#define CMD_NUMBERS 14
 
 #include "Debug.hpp"
 #include "utils.hpp"
@@ -20,7 +20,6 @@ class handle_message
 		std::string *commandNames;
 
 		// HANDLE MESSAGE 
-		void	partFromJoin(Client *);
 		void 	tryRegiste(Client *client);
 		void 	handleLine(int fd, const std::string &line);
 		void 	handleMessage(int fd, const IRCMessage &message);
@@ -45,13 +44,15 @@ class handle_message
 		void 	handleUser(Client *, const IRCMessage &message);
 		void 	handlePass(Client *, const IRCMessage &message);
 		void 	handleQuit(Client *, const IRCMessage &message);
-		void	handle_join(Client *, const IRCMessage &message);
 		void 	handlePrivmsg(Client *, const IRCMessage &message);
+		void	handle_part(Client *client, const IRCMessage &msg);
+		void	handle_join(Client *, const IRCMessage &message);
 		void	handle_kick(Client *, const IRCMessage &message);
 		void	handle_invite(Client *, const IRCMessage &message);
 		void	handle_topic(Client *, const IRCMessage &message);
-
 		void	handle_mode(Client *, const IRCMessage &message);
+		void	handle_ping(Client *, const IRCMessage &message);
+		void	handle_cap(Client *, const IRCMessage &message);
 
 		void	handle_debug(Client *, const IRCMessage &message);
 		

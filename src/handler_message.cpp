@@ -20,7 +20,10 @@ handle_message::HandleFunc* handle_message::startHandleCMDFunc( void )
 		&handle_message::handle_kick,
 		&handle_message::handle_invite,
 		&handle_message::handle_topic,
+		&handle_message::handle_part,
 		&handle_message::handle_mode,
+		&handle_message::handle_ping,
+		&handle_message::handle_cap,
 		&handle_message::handleQuit,
 		&handle_message::handle_debug,
 	};
@@ -39,7 +42,10 @@ std::string *handle_message::startCommandNames( void )
 		"KICK",
 		"INVITE",
 		"TOPIC",
+		"PART",
 		"MODE",
+		"PING",
+		"CAP",
 		"QUIT",
 		"DB"
 	};
@@ -68,7 +74,7 @@ void handle_message::handleMessage(int fd, const IRCMessage &message)
 	if (!client)
 		return;
 
-	static const std::string preRegCmds[] = {"PASS", "NICK", "USER", "DB"};
+	static const std::string preRegCmds[] = {"PASS", "NICK", "USER", "CAP", "PING", "DB"};
 
 	if (!client->isRegistered())
 	{
@@ -345,8 +351,8 @@ void	handle_message::catModeError(Client *client, std::string &channel, size_t s
 //*************  BROADCASTS  *************/
 
 void	handle_message::broadcastNickChange(Client *client,
-										const std::string &oldPrefix,
-										const std::string &newNick)
+											const std::string &oldPrefix,
+											const std::string &newNick)
 {
 	if (!client)
 		return ;
@@ -399,7 +405,6 @@ void handle_message::broadcastJoin(Client *client, const std::string &channel)
 	notify.exceptFd = client->getFd();
 	server->getChannelDomain().notifyMembersOfChannel(channel, notify);	
 }
-
 
 void	handle_message::broadcastPart(Client *client,
 									  const std::string &channel,

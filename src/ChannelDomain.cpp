@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "../include/utils.hpp"
 #include "../include/ChannelDomain.hpp"
 
 ChannelDomain::ChannelDomain() {}
@@ -11,7 +12,8 @@ Channel *ChannelDomain::getChannel(const std::string &channelName)
 {
 	try
 	{
-		Channel *chan = &channels.at(channelName);
+		std::string chanName = utils::toLower(channelName);
+		Channel *chan = &channels.at(chanName);
 		return chan;
 	}
 	catch (std::out_of_range &e)
@@ -67,14 +69,25 @@ std::string ChannelDomain::extractChannelTopic(const std::string &channleName)
 	return (chan->getTopic());
 }
 
-bool	ChannelDomain::isChannelExistent(const std::string &channelName) const
+bool	ChannelDomain::isChannelExistent(const std::string &channelName)
 {
-	std::map<std::string, Channel>::const_iterator it;
-	it = channels.find(channelName);
+	const Channel *chan = getChannel(channelName);
 	
-	if (it != channels.end())
-		return true;
-	return false;
+	if (!chan)
+		return false;
+	return true;
+}
+
+
+bool	ChannelDomain::isChannelEmpty(const std::string &channelName)
+{
+	Channel *chan = getChannel(channelName);
+
+	if (!chan)
+		return (true);
+	if (chan->isEmptyChannel())
+		return (true);
+	return (false);
 }
 
 bool	ChannelDomain::isChannelMember(Client *client, const std::string &channelName)
@@ -132,7 +145,8 @@ void 	ChannelDomain::createChannel(Client *cli, std::string channelName, std::st
 {
 	if (channelName.empty() || !cli)
 		return ;
-
+	
+	channelName = utils::toLower(channelName);
 	if (key.empty())
 		channels.insert(std::make_pair(channelName, Channel(channelName, cli)));
 	else
@@ -154,7 +168,7 @@ void	ChannelDomain::deleteChannel(const std::string channelName)
 	if (channelName.empty())
 		return ;
 
-	channels.erase(channelName);
+	channels.erase(utils::toLower(channelName));
 }
 
 void ChannelDomain::removeClientFromChannels(Client *client)

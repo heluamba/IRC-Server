@@ -96,20 +96,45 @@ void handle_message::handlePass(Client *client, const IRCMessage &message)
 	server->removeClient(client->getFd());
 }
 
-void	handle_message::partFromJoin(Client *client)
+void	handle_message::handle_part(Client *client, const IRCMessage &msg)
 {
+	if (!client)
+		return ;
+
+	if (msg.params.empty()) {
+		client->queueMessage(NumericReplies::needMoreParams(*client,
+															server->serv_name,
+															msg.command));
+		return ;
+	}
+
+	std::string reason;
+	std::vector<std::string> channelsNames = utils::split(msg.params[0], ',');
 	ChannelDomain &chaDomain = server->getChannelDomain();
-	std::vector<std::string> channelsNames = client->getMemberShip();
+	if (msg.params.size() > 1)
+		reason = msg.params[1];
+	
 	for (size_t i = 0;  i < channelsNames.size(); i++)
 	{
-		if (!chaDomain.isChannelExistent(channelsNames[i]))
-		{
-			client->queueMessage(NumericReplies::noSuchChannel(*client, server->serv_name, channelsNames[i]));
+		if (!chaDomain.isChannelExistent(channelsNames[i])) {
+			client->queueMessage(NumericReplies::noSuchChannel(*client,
+																server->serv_name,
+																channelsNames[i]));
 			continue;
 		}
-		broadcastPart(client, channelsNames[i], "");
+		if (!chaDomain.isChannelMember(client, channelsNames[i])) {
+			client->queueMessage(NumericReplies::notOnChannel(*client,
+															  server->serv_name,
+															  channelsNames[i]));
+			continue;
+		}
+		
+		broadcastPart(client, channelsNames[i], reason);
 		std::string nick = client->getNickname();
 		chaDomain.removeMemberOfChannel(nick, channelsNames[i]);
+
+		if (chaDomain.isChannelEmpty(channelsNames[i]))
+			chaDomain.deleteChannel(channelsNames[i]);
 	}
 }
 
@@ -117,9 +142,15 @@ void	handle_message::handle_join(Client *client, const IRCMessage &message)
 {
 	if (!client)
 		return ;
+	
+	ChannelDomain &chaDomain = server->getChannelDomain();
 	if (message.params.size() == 1) {
 		if (message.params[0] == "0") {
-			partFromJoin(client);
+			//Remove Notify client from all channels
+			std::vector<std::string> channels = client->getMemberShip();
+			for (size_t i = 0; i < channels.size(); i++)
+				broadcastPart(client, channels[i], "");
+			chaDomain.removeClientFromChannels(client);
 			return ;
 		}
 	}
@@ -131,7 +162,6 @@ void	handle_message::handle_join(Client *client, const IRCMessage &message)
 	std::string key;
 	std::string channelName;
 	channelsKeys::iterator it;
-	ChannelDomain &chaDomain = server->getChannelDomain();
 	for (it = chankeys.begin(); it != chankeys.end(); it++)
 	{
 		size_t status = SUCESS;
@@ -386,4 +416,32 @@ void	handle_message::handle_mode(Client *client, const IRCMessage &message)
 	}
 	if (!appliedModes.empty())
 		broadcastMode(client, channel, appliedModes, appliedParams);
+}
+
+void	handle_message::handle_ping(Client *client, const IRCMessage &message)
+{
+	if (!client)
+		return ;
+
+	std::string token;
+	if (!message.params.empty())
+		token = message.params[0];
+	std::string reply;
+
+	if (token.empty())
+		reply = ":" + server->serv_name + " PONG " + server->serv_name;
+	else
+		reply = ":" + server->serv_name + " PONG " + server->serv_name + " :" + token;
+	client->queueMessage(reply); 
+}
+
+void	handle_message::handle_cap(Client *client, const IRCMessage &message)
+{
+	if (!client || message.params.empty())
+		return ;
+
+	if (message.params[0] == "LS") {
+		std::string list = ":IRC CAP * LS :";
+		client->queueMessage(list);
+	}
 }

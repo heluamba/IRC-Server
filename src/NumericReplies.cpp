@@ -284,3 +284,10 @@ std::string NumericReplies::UnknownMode(const Client &client,
 	std::string msg = std::string(1, mode) + " :is unknown mode char to me for " + channel;
 	return make(client, server, "472", msg);
 }
+
+std::string NumericReplies::userDontMatch(const Client &client,
+								   		  const std::string &server)
+{
+	std::string msg = " :Cannot change mode for other users";
+	return make(client, server, "502", msg);
+}

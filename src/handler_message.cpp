@@ -74,7 +74,7 @@ void handle_message::handleMessage(int fd, const IRCMessage &message)
 	if (!client)
 		return;
 
-	static const std::string preRegCmds[] = {"PASS", "NICK", "USER", "CAP", "PING", "DB"};
+	static const std::string preRegCmds[] = {"PASS", "NICK", "USER", "CAP", "PING", "QUIT", "DB"};
 
 	if (!client->isRegistered())
 	{

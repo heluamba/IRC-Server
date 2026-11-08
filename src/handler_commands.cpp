@@ -93,7 +93,6 @@ void handle_message::handlePass(Client *client, const IRCMessage &message)
 		return ;
 	}
 	client->queueMessage(NumericReplies::passMismatch(*client, server->serv_name));
-	server->removeClient(client->getFd());
 }
 
 void	handle_message::handle_part(Client *client, const IRCMessage &msg)
@@ -146,7 +145,7 @@ void	handle_message::handle_join(Client *client, const IRCMessage &message)
 	ChannelDomain &chaDomain = server->getChannelDomain();
 	if (message.params.size() == 1) {
 		if (message.params[0] == "0") {
-			//Remove Notify client from all channels
+			//Remove & Notify client from all channels
 			std::vector<std::string> channels = client->getMemberShip();
 			for (size_t i = 0; i < channels.size(); i++)
 				broadcastPart(client, channels[i], "");
@@ -376,7 +375,7 @@ void	handle_message::handle_mode(Client *client, const IRCMessage &message)
 	std::vector<std::string> params = message.params;
 	
 	ChannelDomain &chanDomain = server->getChannelDomain();
-	
+
 	bool		activate = true;
 	size_t			j = 2;
 
@@ -442,6 +441,7 @@ void	handle_message::handle_cap(Client *client, const IRCMessage &message)
 
 	if (message.params[0] == "LS") {
 		std::string list = ":IRC CAP * LS :";
+		std::cout << list << std::endl;
 		client->queueMessage(list);
 	}
 }

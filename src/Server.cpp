@@ -97,13 +97,6 @@ void Server::run()
 
             int fd = poll_fds[i].fd;
 
-            if (rev & (POLLERR | POLLHUP | POLLNVAL))
-            {
-                if (fd != server_fd)
-                    removeClient(fd);
-                continue;
-            }
-
             if (rev & POLLIN)
             {
                 if (fd == server_fd)
@@ -111,8 +104,18 @@ void Server::run()
                 else
                     handleClientData(fd);
             }
+
             if (rev & POLLOUT)
                 handleClientWrite(fd);
+			
+			if (rev & (POLLERR | POLLHUP | POLLNVAL)) {
+                if (fd != server_fd) {
+					Client *c = findClient(fd);
+            		if (!c || c->isOutputBufferEmpty())
+                		removeClient(fd);
+				}
+                continue;
+            }
         }
     }
 }
@@ -146,14 +149,9 @@ void Server::handleClientData(int fd)
 	char buffer[512];
 	int bytesRead = recv(fd, buffer, sizeof(buffer), 0);
 
-	if (bytesRead == 0)
-	{
-		removeClient(fd);
+	if (bytesRead <= 0){
 		return;
 	}
-
-	if (bytesRead < 0)
-		return;
 
 	Client *client = findClient(fd);
 	if (!client)
@@ -169,6 +167,9 @@ void Server::handleClientData(int fd)
 
 		if (handleMessage != NULL)
 			handleMessage->processLine(fd, line);
+		
+		if (!findClient(fd))
+			return ;
 	}
 }
 
@@ -192,13 +193,6 @@ void Server::handleClientWrite(int fd)
 
 		if (client->isOutputBufferEmpty())
 			updateServerPollEvents(fd, POLLOUT, false);
-	}
-	else if (sendBytes == -1)
-	{
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return ;
-		if (errno == EPIPE || errno == ECONNRESET)
-			removeClient(fd);
 	}
 }
 

@@ -44,7 +44,7 @@ std::string NumericReplies::erroNeusNickNmane(const Client &client,
 std::string NumericReplies::nicknameInUse(const Client &client,
                                           const std::string &server,
                                           const std::string &nick) {
-  return make(client, server, "433", nick + "Nickname is already in use");
+  return make(client, server, "433", nick + " Nickname is already in use");
 }
 
 std::string NumericReplies::alreadyRegistered(const Client &client,
@@ -73,7 +73,7 @@ std::string NumericReplies::noSuchNick(const Client &client,
                                        const std::string &server,
                                        const std::string &nick)
 {
-  return make(client, server, "401", nick + "No such nick/channel");
+  return make(client, server, "401", nick + " No such nick/channel");
 }
 
 std::string NumericReplies::noRecipient(const Client &client,

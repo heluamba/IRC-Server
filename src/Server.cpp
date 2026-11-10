@@ -26,7 +26,7 @@ void Server::signalHandler(int signum) {
 }
 
 Server::Server(int port, const std::string pass) : server_fd(-1), serv_name("IRC"),
-									passWord(pass), handleMessage(NULL)
+									passWord(pass), toRemoveClient(false), handleMessage(NULL)
 {
   handleMessage = new handle_message(this);
 
@@ -77,6 +77,8 @@ Server::~Server()
 ChannelDomain &Server::getChannelDomain() { return chanDomain; }
 const std::string &Server::getPass() const { return passWord; }
 
+void Server::markToRemove(bool value) { toRemoveClient = value; }
+
 void Server::run()
 {
     while (!shutdown)
@@ -108,15 +110,19 @@ void Server::run()
             if (rev & POLLOUT)
                 handleClientWrite(fd);
 			
-			if (rev & (POLLERR | POLLHUP | POLLNVAL)) {
+			if (rev & (POLLERR | POLLHUP | POLLNVAL))
+			{
                 if (fd != server_fd) {
 					Client *c = findClient(fd);
-            		if (!c || c->isOutputBufferEmpty())
-                		removeClient(fd);
+            		if (!c || c->isOutputBufferEmpty()) {
+                		markToRemove(true);
+						c->setToRemove(true);
+					}
 				}
                 continue;
             }
         }
+		removeMarkedClients();
     }
 }
 
@@ -210,6 +216,33 @@ void Server::removeClient(int fd)
 	}
 
 	std::cout << RED << "Cliente desligado: fd" << fd << std::endl;
+}
+
+void Server::removeMarkedClients()
+{
+	if (!this->toRemoveClient)
+		return ;
+	int fd;
+	for (size_t i = 0; i < poll_fds.size(); )
+	{
+		Client *c = findClient(poll_fds[i].fd);
+		if (c && c->isToRemove() && c->isOutputBufferEmpty())
+		{
+			fd = poll_fds[i].fd;
+
+			this->getChannelDomain().removeClientFromChannels();
+
+			close(fd);
+			clients.erase(fd);
+			poll_fds.erase(poll_fds.begin() + i);
+		}
+		else {
+			++i;
+		}
+	}
+	markToRemove(false);
+		std::cout << RED << "Cliente desligado: fd" << fd <<
+					 WHI << std::endl;
 }
 
 void Server::updateServerPollEvents(int fd, short event, bool add)

@@ -81,24 +81,31 @@ void handle_message::handleMessage(int fd, const IRCMessage &message)
 		bool allowed = false;
 		for (int i = 0; i < CMD_NUMBERS; i++)
 		{
-			if (message.command == preRegCmds[i])
-			{
+			if (message.command == preRegCmds[i]) {
 				allowed = true;
 				break ;
 			}
 		}
-        if (!allowed)
-		{
+        if (!allowed) {
 			client->queueMessage(NumericReplies::notRegistered(*client, server->serv_name));
 			return ;
 		}
     }
 
-    for (int i = 0; i < CMD_NUMBERS; i++)
+	bool	found = false;
+    for (size_t i = 0; i < CMD_NUMBERS; i++)
 	{
 		if (message.command == commandNames[i])
+		{
 			(this->*handleCommands[i])(client, message);
+			found = true;
+			break;
+		}
 	}
+	if (!found)
+		client->queueMessage(NumericReplies::unknownCommand(*client,
+															server->serv_name,
+															message.command));
 }
 
 void	handle_message::processLine(int fd, const std::string &line)
@@ -143,8 +150,10 @@ bool handle_message::nicknameInUse(const std::string &nickname, Client *client) 
 	{
 		if (it->first != exceptFd)
 		{
-			const Client &client = it->second;
-			if (nick == utils::toLower(client.getNickname()))
+			const Client *client = &it->second;
+			if (!client)
+				continue;
+			if (nick == utils::toLower(client->getNickname()))
 				return (true);
 		}
 	}

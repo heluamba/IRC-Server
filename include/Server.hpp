@@ -28,7 +28,8 @@ class Server
 		std::string serv_name;
 		const std::string passWord;
 
-  		static bool shutdown;
+		static bool shutdown;
+		bool		toRemoveClient;
   		handle_message *handleMessage;
   		std::vector<struct pollfd> poll_fds;
   		std::map<int, Client> clients;
@@ -38,6 +39,7 @@ class Server
   		void acceptNewClient();
   		void handleClientData(int fd);
 		void handleClientWrite(int fd);
+		void removeMarkedClients();
   		void removeClient(int fd);
 
 		Client *findClient(const int &fd);
@@ -52,6 +54,8 @@ class Server
 		ChannelDomain		&getChannelDomain();
 		const std::string 	&getPass() const;
 		
+		void markToRemove(bool value);
+		void removeClientFromServer(Client *);
 		void updateServerPollEvents(int fd, short event, bool add);
 
   	void run();

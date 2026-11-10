@@ -12,25 +12,20 @@ void handle_message::handleNick(Client *client, const IRCMessage &message)
 {
 	if (!client)
 		return ;
-	if (message.params.size() <= 0 || message.params[0].empty())
-	{
+	if (message.params.size() <= 0 || message.params[0].empty()) {
 		client->queueMessage(NumericReplies::noNicknameGiven(*client, server->serv_name));
 		return ;
 	}
 	std::string nick = message.params[0];
-	if (!utils::isValidNickName(nick))
-	{
+	if (!utils::isValidNickName(nick)) {
 		client->queueMessage(NumericReplies::erroNeusNickNmane(*client, server->serv_name, nick));
 		return ;
 	}
-	if (!server->getPass().empty())
-		if (!client->isPasswordOk())
-		{
-			client->queueMessage("Pass Required First");
-			return ;
-		}
-	if (nicknameInUse(nick, client))
-	{
+	if (!client->isPasswordOk()) {
+		client->queueMessage("Pass Required First");
+		return ;
+	}
+	if (nicknameInUse(nick, client)) {
 		client->queueMessage(NumericReplies::nicknameInUse(*client, server->serv_name, nick));
 		return ;
 	}
@@ -75,20 +70,15 @@ void handle_message::handlePass(Client *client, const IRCMessage &message)
 		return ;
 
 	size_t	size = message.params.size();
-	if (client->isRegistered())
-	{
+	if (client->isRegistered()) {
 		client->queueMessage (NumericReplies::alreadyRegistered(*client, server->serv_name));
 		return ;
 	}
-	if (size < 1)
-	{
+	if (size < 1) {
 		client->queueMessage(NumericReplies::needMoreParams(*client, server->serv_name, message.command));
 		return ;
 	}
-	if (server->getPass().empty())
-		return ;
-	if (message.params[0] == server->getPass())
-	{
+	if (message.params[0] == server->getPass()) {
 		client->setPasswordOk(true);
 		return ;
 	}
@@ -199,7 +189,8 @@ void handle_message::handleQuit(Client *client, const IRCMessage &message)
 
 	broadcastQuit(client, reason);
 	server->getChannelDomain().removeClientFromChannels(client);
-	server->removeClient(client->getFd());
+	server->markToRemove(true);
+	client->setToRemove(true);
 }
 
 void handle_message::handlePrivmsg(Client *client, const IRCMessage &message)

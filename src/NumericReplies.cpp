@@ -291,3 +291,11 @@ std::string NumericReplies::userDontMatch(const Client &client,
 	std::string msg = " :Cannot change mode for other users";
 	return make(client, server, "502", msg);
 }
+
+std::string NumericReplies::unknownCommand(const Client &client,
+								   		   const std::string &server,
+										   const std::string command)
+{
+	std::string msg = command + " :Unknown command";
+	return make(client, server, "421", msg);
+}

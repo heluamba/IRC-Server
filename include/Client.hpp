@@ -35,7 +35,8 @@ class Client
 		std::vector<std::string> memberShip;
   		
 		bool	registered;
-  		bool	passwordOk;
+		bool	passwordOk;
+		bool	toRemove;
 
 	public:
   		Client();
@@ -62,6 +63,7 @@ class Client
 		void setOutBuffer(std::string buffer);
 		void setRegistered(bool value);
 		void setPasswordOk(bool value);
+		void setToRemove(bool value);
 		void setFd(int Fd) { fd = Fd; };
 		void setIp(const std::string &Ip) { ip = Ip; };
 		void appendToOutputBuffer(std::string message);
@@ -74,6 +76,7 @@ class Client
 		bool isOutputBufferEmpty() const;
   		bool isRegistered() const;
   		bool isPasswordOk() const;
+		bool isToRemove() const;
 };
 
 #endif

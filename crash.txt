@@ -1,0 +1,49 @@
+Sim, esta é uma regra de avaliação extremamente rígida. A tua preocupação é totalmente pertinente, porque na implementação atual existem pelo menos **dois pontos de crash de alta risco** que precisam ser tratados primeiro, e depois é necessário fazer uma "blindagem defensiva" para os casos extremos de memória e lógica.
+
+### 🚨 Risco Imediato: Crash por SIGPIPE (o mais fácil de ignorar)
+
+Quando usas `send()` para enviar dados para um cliente que já fechou a conexão, o sistema operacional enviará um sinal `SIGPIPE` para o teu processo. **O comportamento padrão deste sinal é terminar o processo diretamente**, e o programa simplesmente "desaparece", sem possibilidade de capturar exceções.
+
+**Solução (escolhe uma):**
+1.  **Ignorar o sinal globalmente** (mais simples): adiciona `signal(SIGPIPE, SIG_IGN);` no início da `main`. Isto faz com que `send` falhe e retorne `-1` em vez de derrubar o processo.
+2.  **Usar a flag `MSG_NOSIGNAL`**: no Linux, altera a chamada `send(fd, buf, len, 0)` para `send(fd, buf, len, MSG_NOSIGNAL)`, assim esta operação de envio específica não gera o sinal.
+
+### 🧠 Falha de Alocação de Memória (o requisito explícito do enunciado)
+
+O enunciado exige "even when it runs out of memory" (mesmo quando a memória se esgota), o que significa que quando `new` falha e lança `std::bad_alloc`, não podes deixar o programa fazer `abort` diretamente.
+
+**Abordagem de tratamento:**
+1.  **Não deixes a exceção escapar para a `main`**: se a `main` não capturar `std::bad_alloc`, o programa chama `std::terminate` e faz abort, obtendo 0 pontos.
+2.  **Tratamento seguro na camada de rede**: envolve o código que pode alocar grandes quantidades de memória (como `std::string` para acumular buffers de clientes) em `try/catch`. Quando a alocação falhar, a estratégia mais segura é **fechar a conexão desse cliente** (por exemplo, chamar `removeClient`), libertar os seus recursos e continuar a servir outros clientes, em vez de tentar recuperar o estado ou continuar a alocar.
+3.  **Exceções dentro do loop principal**: se `poll` ou processamento de comandos lançar `bad_alloc`, deves capturá-la no loop principal e decidir se é possível continuar com segurança (geralmente não é). Uma abordagem conservadora é: capturar a exceção, registar o erro, libertar recursos tanto quanto possível e sair do loop de forma controlada (em vez de abort).
+
+### 🛡️ Outros Pontos de Crash Conhecidos (verifica se o teu código tem estes problemas)
+
+Vários projetos `ft_irc` no GitHub registaram crashes relacionados, que podes usar como referência para auto-inspeção:
+
+*   **Acesso fora dos limites de `std::vector`**: como usar `vector.at()` ou acesso direto a índices sem verificar `size()`. Por exemplo, após o comando `JOIN` com espaços e sem argumentos, o parsing pode levar a acesso fora dos limites e segfault.
+*   **`std::out_of_range` não capturado**: em cenários como entrar num canal e depois ficar idle, pode ser lançada esta exceção e o programa faz abort diretamente.
+*   **Ponteiros pendentes**: ao remover elementos de `std::vector`, os iteradores ou ponteiros para elementos podem invalidar-se, e o uso contínuo causa crash. A solução é usar `std::shared_ptr` ou reobter ponteiros válidos após a remoção.
+*   **`delete` em memória inválida**: o parsing de comandos IRC malformados (como começar com `:`) pode levar a erros de memória na lógica de parsing.
+
+### 📋 Resumo das Ações
+
+| Área de Risco | Ação Imediata |
+| :--- | :--- |
+| **SIGPIPE** | Na `main`, `signal(SIGPIPE, SIG_IGN)` ou adicionar `MSG_NOSIGNAL` no `send` |
+| **bad_alloc** | Envolver alocações de grande porte com `try/catch`; capturar na `main` como último recurso |
+| **Out_of_range / Segfault** | Revisar todos os acessos a `vector[i]`, adicionar verificação de limites ou usar `at()` |
+| **Iteradores/Ponteiros** | Verificar se os ponteiros para `Client`/`Channel` são invalidados após remoção |
+
+Tratar primeiro o problema do `SIGPIPE` e depois fazer uma ronda de "auditoria defensiva" sobre os pontos de acesso a vectores e ponteiros no teu código, é a forma mais segura de evitar o 0 pontos.
+
+
+
+
+Linha muito longa: enviar 10KB de dados numa linha → o servidor deve truncar ou ignorar, não crashar.
+
+Muitas conexões simultâneas: for i in {1..100}; do nc -C ... & done → o servidor deve aguentar sem crashar.
+
+Cliente que fecha abruptamente: nc -C ... & sleep 1; kill -9 $! → o servidor deve remover o cliente no próximo poll (POLLHUP), sem crashar.
+
+

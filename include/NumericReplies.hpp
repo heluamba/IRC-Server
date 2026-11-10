@@ -28,7 +28,7 @@ public:
                                    const std::string &serverName,
                                    const std::string &nick);
 
-static std::string erroNeusNickNmane(const Client &,
+  static std::string erroNeusNickNmane(const Client &,
 									 const std::string &server,
 									 const std::string &nick);
 
@@ -55,113 +55,117 @@ static std::string erroNeusNickNmane(const Client &,
   static std::string noTextToSend(const Client &,
                                   const std::string &serverName);
 
-static std::string badchanmask(const Client &,
+  static std::string badchanmask(const Client &,
                         	   const std::string &server,
 							   const std::string &channel);
 
-static std::string noSuchChannel(const Client &,
+  static std::string noSuchChannel(const Client &,
                                  const std::string &server,
 								 const std::string &channel);
 
-static std::string toManyTargets(const Client &,
+  static std::string toManyTargets(const Client &,
                                  const std::string &server,
 								 const std::string &abortMessage);
 
-static std::string toManyChannels(const Client &,
+  static std::string toManyChannels(const Client &,
                                   const std::string &server,
 								  const std::string &channel);
 
-static std::string unavaiLResource(const Client &,
+  static std::string unavaiLResource(const Client &,
                                    const std::string &server,
 								   const std::string &resource);
 
 									 
-static std::string badChannelKey(const Client &,
+  static std::string badChannelKey(const Client &,
                                  const std::string &server,
 								 const std::string &channel);
 
-static std::string iventeOnlyChannel(const Client &,
+  static std::string iventeOnlyChannel(const Client &,
                                      const std::string &server,
 									 const std::string &channel);
 
-static std::string channelListFull(const Client &,
+  static std::string channelListFull(const Client &,
                                    const std::string &server,
 								   const std::string &channel);
 
-static std::string umodeUnknowFlag(const Client &client,
+  static std::string umodeUnknowFlag(const Client &client,
                                    const std::string &server,
 								   const std::string &flag);
 
-static std::string rpl_noTopic(const Client &client,
+  static std::string rpl_noTopic(const Client &client,
 							   const std::string &server,
 							   const std::string &channel);
 
-static std::string rpl_topic(const Client &client,
+  static std::string rpl_topic(const Client &client,
 							 const std::string &server,
 							 const std::string &channel,
 							 const std::string &topic);
 
-static std::string rpl_naReply(const Client &client,
+  static std::string rpl_naReply(const Client &client,
 							   const std::string &server,
 							   const std::string &channel,
 							   const std::string &symbol,
 							   const std::string &members);
 
-static std::string rpl_endOfNames(const Client &client,
+  static std::string rpl_endOfNames(const Client &client,
 								  const std::string &server,
 								  const std::string &channel);
 
-static std::string rpl_inviting(const Client &client,
+  static std::string rpl_inviting(const Client &client,
 									  	 const std::string &server,
 									  	 const std::string &channel,
 										 const std::string &nick);
 
-static std::string rpl_channelModeis(const Client &client,
+  static std::string rpl_channelModeis(const Client &client,
 									  const std::string &server,
 									  const std::string &channel,
 									  const std::string &modeStatus);
 
-static std::string UnknownCommand(const Client &client,
+  static std::string UnknownCommand(const Client &client,
 								  const std::string &server,
 								  const std::string &command);
 
-static std::string notOnChannel(const Client &client,
+  static std::string notOnChannel(const Client &client,
 								const std::string &server,
 								const std::string &channel);
 
-static std::string canNotSendToChan(const Client &client,
+  static std::string canNotSendToChan(const Client &client,
 									const std::string &server,
 									const std::string &channel);
 
 
 
-static std::string chaNoPrivsNeed(const Client &client,
+  static std::string chaNoPrivsNeed(const Client &client,
 								  const std::string &server,
 								  const std::string &channel);
 
-static std::string userNoTinChannel(const Client &client,
+  static std::string userNoTinChannel(const Client &client,
 									const std::string &server,
 									const std::string &channel,
 									const std::string &nick);
 
 
-static std::string userOnChannel(const Client &client,
+  static std::string userOnChannel(const Client &client,
 								 const std::string &server,
 								 const std::string &channel);
 
-static std::string keySet(const Client &client,
-								   const std::string &server,
-								   const std::string &channel);
+  static std::string keySet(const Client &client,
+							const std::string &server,
+							const std::string &channel);
 
-static std::string UnknownMode(const Client &client,
-								   		const std::string &server,
-								   		const std::string &channel,
-										const char &mode);
+  static std::string UnknownMode(const Client &client,
+								 const std::string &server,
+								 const std::string &channel,
+								 const char &mode);
 
 
-static std::string userDontMatch(const Client &client,
+  static std::string userDontMatch(const Client &client,
 						  const std::string &server);
 
+
+  static std::string unknownCommand(const Client &client,
+								   	const std::string &server,
+									const std::string command);
 
 };
 

@@ -15,8 +15,9 @@ class handle_message
 {
 	private:
 		typedef void (handle_message::*HandleFunc)(Client *, const IRCMessage &);
-		Server *server;
-		HandleFunc *handleCommands;
+		
+		Server 		*server;
+		HandleFunc 	*handleCommands;
 		std::string *commandNames;
 
 		// HANDLE MESSAGE 

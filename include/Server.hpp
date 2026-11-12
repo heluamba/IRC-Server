@@ -1,19 +1,19 @@
 #ifndef SERVER_HPP
-#define SERVER_HPP
+# define SERVER_HPP
 
-#include "Debug.hpp"
-#include "Client.hpp"
-#include "message.hpp"
-#include "IRCMessage.hpp"
-#include "ChannelDomain.hpp"
+# include "Debug.hpp"
+# include "Client.hpp"
+# include "message.hpp"
+# include "IRCMessage.hpp"
+# include "ChannelDomain.hpp"
 
-#include <map>
-#include <poll.h>
-#include <vector>
+# include <map>
+# include <poll.h>
+# include <vector>
 
-#define RED "\e[1;31m"
-#define WHI "\e[0;37m"
-#define GRE "\e[1;32m"
+# define RED "\e[1;31m"
+# define WHI "\e[0;37m"
+# define GRE "\e[1;32m"
 
 class	handle_message;
 
@@ -55,7 +55,6 @@ class Server
 		const std::string 	&getPass() const;
 		
 		void markToRemove(bool value);
-		void removeClientFromServer(Client *);
 		void updateServerPollEvents(int fd, short event, bool add);
 
   	void run();

@@ -38,13 +38,16 @@ std::string NumericReplies::noNicknameGiven(const Client &client,
 std::string NumericReplies::erroNeusNickNmane(const Client &client,
 											  const std::string &server,
 											  const std::string &nick){
-    return make(client, server, "432", nick + " :Erroneous nickname");
+   return ":" + server + " 432 " + target(client) + " " + nick
+        + " :Erroneous nickname\r\n";
 }
 
 std::string NumericReplies::nicknameInUse(const Client &client,
                                           const std::string &server,
-                                          const std::string &nick) {
-  return make(client, server, "433", nick + " Nickname is already in use");
+                                          const std::string &nick)
+{
+    return ":" + server + " 433 " + target(client) + " " + nick
+           + " :Nickname is already in use\r\n";
 }
 
 std::string NumericReplies::alreadyRegistered(const Client &client,
@@ -73,7 +76,8 @@ std::string NumericReplies::noSuchNick(const Client &client,
                                        const std::string &server,
                                        const std::string &nick)
 {
-  return make(client, server, "401", nick + " No such nick/channel");
+  return ":" + server + " 401 " + target(client) + " " + nick
+           + " :No such nick/channel\r\n";
 }
 
 std::string NumericReplies::noRecipient(const Client &client,
@@ -127,7 +131,7 @@ std::string NumericReplies::unavaiLResource(const Client &client,
                                      const std::string &server,
 									 const std::string &resource)
 {
-	std::string msg = resource + " :is temporarily unavailable";
+	std::string msg = resource + " :Resource is temporarily unavailable";
 	return make(client, server, "437", msg);
 }
 
@@ -144,7 +148,7 @@ std::string NumericReplies::channelListFull(const Client &client,
 									 const std::string &channel)
 {
 	std::string msg = channel + " :Channel list is full";
-	return make(client, server, "478", msg);
+	return make(client, server, "471", msg);
 }
 
 std::string NumericReplies::badChannelKey(const Client &client,
@@ -152,7 +156,7 @@ std::string NumericReplies::badChannelKey(const Client &client,
 									 const std::string &channel)
 {
 	std::string msg = channel + " :Cannot join channel (+k)";
-	return make(client, server, "478", msg);
+	return make(client, server, "475", msg);
 }
 
 
@@ -161,7 +165,7 @@ std::string NumericReplies::umodeUnknowFlag(const Client &client,
 									 const std::string &flag)
 {
 	std::string msg = flag + " :Unknown MODE flag";
-	return make(client, server, "478", msg);
+	return make(client, server, "501", msg);
 }
 
 std::string NumericReplies::rpl_noTopic(const Client &client,

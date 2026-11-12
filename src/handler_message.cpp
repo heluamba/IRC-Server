@@ -7,7 +7,6 @@
 #include <sstream>
 #include <vector>
 
-
 handle_message::HandleFunc* handle_message::startHandleCMDFunc( void )
 {
 	static HandleFunc functions[] = 
@@ -190,7 +189,7 @@ void handle_message::removeClientFromServer(Client *client)
 	if (!client)
 		return ;
 	
-	broadcastQuit(client, "Clietn Quit");
+	broadcastQuit(client, "Client Quit");
 	server->getChannelDomain().removeClientFromChannels(client);
 }
 
@@ -210,7 +209,7 @@ bool	handle_message::isValidJoinParams(Client *client, const IRCMessage &message
 	}
 	if (size == 2)
 		keys = message.params[1];
-	chankeys =  utils::extactJoinFields(message.params[0], keys);
+	chankeys =  utils::extractJoinFields(message.params[0], keys);
 	if (chankeys.empty())
 	{
 		client->queueMessage(NumericReplies::badchanmask(*client, server->serv_name, message.params[0]));

@@ -14,11 +14,13 @@ class utils
 		~utils();
 
 	public:
-		static std::string toLower(const std::string &str);
 		static bool	isValidNickName(const std::string &nick);
 		static bool isValidChannelName(const std::string &nick);
+		static bool	isValidNumber(std::string nu);
+		
 		static std::vector<std::string>	split(std::string str, char c);
-		static channelsKeys extactJoinFields(const std::string &channels,
+		static std::string toLower(const std::string &str);
+		static channelsKeys extractJoinFields(const std::string &channels,
 												const std::string keys);
 };
 

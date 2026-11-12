@@ -113,10 +113,10 @@ void Server::run()
 			if (rev & (POLLERR | POLLHUP | POLLNVAL))
 			{
                 if (fd != server_fd) {
-					Client *c = findClient(fd);
-            		if (!c || c->isOutputBufferEmpty()) {
+					Client *cli = findClient(fd);
+            		if (cli && cli->isOutputBufferEmpty()) {
                 		markToRemove(true);
-						c->setToRemove(true);
+						cli->setToRemove(true);
 					}
 				}
                 continue;
@@ -146,8 +146,8 @@ void Server::acceptNewClient() {
 
   clients.insert(std::make_pair(clientFd, Client(clientFd, ip, this)));
 
-  std::cout << "Novo cliente ligado: fd " << clientFd << " (" << ip << ")"
-            << std::endl;
+  std::cout << GRE << "Novo cliente ligado: fd " << clientFd << " (" << ip << ")"
+            << WHI << std::endl;
 }
 
 void Server::handleClientData(int fd)
@@ -222,15 +222,16 @@ void Server::removeMarkedClients()
 {
 	if (!this->toRemoveClient)
 		return ;
+	
 	int fd;
 	for (size_t i = 0; i < poll_fds.size(); )
 	{
-		Client *c = findClient(poll_fds[i].fd);
-		if (c && c->isToRemove() && c->isOutputBufferEmpty())
+		Client *cli = findClient(poll_fds[i].fd);
+		if (cli && cli->isToRemove() && cli->isOutputBufferEmpty())
 		{
 			fd = poll_fds[i].fd;
 
-			this->getChannelDomain().removeClientFromChannels();
+			getChannelDomain().removeClientFromChannels(cli);
 
 			close(fd);
 			clients.erase(fd);
@@ -241,8 +242,8 @@ void Server::removeMarkedClients()
 		}
 	}
 	markToRemove(false);
-		std::cout << RED << "Cliente desligado: fd" << fd <<
-					 WHI << std::endl;
+	std::cout << RED << "Cliente desligado: fd" << fd <<
+				 WHI << std::endl;
 }
 
 void Server::updateServerPollEvents(int fd, short event, bool add)

@@ -116,7 +116,7 @@ void	handle_message::handle_part(Client *client, const IRCMessage &msg)
 															  server->serv_name,
 															  channelsNames[i]));
 			continue;
-		}
+		}	
 		
 		broadcastPart(client, channelsNames[i], reason);
 		std::string nick = client->getNickname();

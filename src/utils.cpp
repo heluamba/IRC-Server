@@ -39,6 +39,21 @@ std::vector<std::string> utils::split(std::string str, char c)
 	return result;
 }
 
+bool	utils::isValidNumber(std::string nu)
+{
+	unsigned char d;
+	size_t size = nu.size();
+
+	for (size_t i = 1; i < size; ++i)
+    {
+        d = static_cast<unsigned char>(nu[i]);
+
+        if (!(d >= '0' && d <= '9') || d == '-')
+            return false;
+    }
+	return true;
+}
+
 bool	utils::isValidNickName(const std::string &nick)
 {
     const std::string special = "[]\\`_^{}|";
@@ -86,7 +101,7 @@ bool	utils::isValidChannelName(const std::string &name)
 	return true;
 }
 
-channelsKeys	utils::extactJoinFields(const std::string &channels,
+channelsKeys	utils::extractJoinFields(const std::string &channels,
 											const std::string keys)
 {
 	channelsKeys		chanKeys;

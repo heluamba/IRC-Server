@@ -114,7 +114,7 @@ void Server::run()
 			{
                 if (fd != server_fd) {
 					Client *cli = findClient(fd);
-            		if (cli && cli->isOutputBufferEmpty()) {
+            		if (cli) {
                 		markToRemove(true);
 						cli->setToRemove(true);
 					}
@@ -152,16 +152,19 @@ void Server::acceptNewClient() {
 
 void Server::handleClientData(int fd)
 {
+	Client *client = findClient(fd);
+	if (!client)
+		return ;
+
 	char buffer[512];
 	int bytesRead = recv(fd, buffer, sizeof(buffer), 0);
 
 	if (bytesRead <= 0){
+		markToRemove(true);
+		client->setToRemove(true);
 		return;
 	}
 
-	Client *client = findClient(fd);
-	if (!client)
-		return ;
 	std::string &clientBuffer = client->getBuffer();
 	clientBuffer.append(buffer, bytesRead);
 
@@ -200,6 +203,11 @@ void Server::handleClientWrite(int fd)
 		if (client->isOutputBufferEmpty())
 			updateServerPollEvents(fd, POLLOUT, false);
 	}
+	else if (sendBytes < 0)
+	{
+        markToRemove(true);
+		client->setToRemove(true);
+	}
 }
 
 void Server::removeClient(int fd)
@@ -227,7 +235,7 @@ void Server::removeMarkedClients()
 	for (size_t i = 0; i < poll_fds.size(); )
 	{
 		Client *cli = findClient(poll_fds[i].fd);
-		if (cli && cli->isToRemove() && cli->isOutputBufferEmpty())
+		if (cli && cli->isToRemove())
 		{
 			fd = poll_fds[i].fd;
 
@@ -272,7 +280,6 @@ Client *Server::findClient(const int &fd)
 	}
 	catch (std::out_of_range &e)
 	{
-		std::cerr << "Client Not Found" << std::endl;
 		return NULL;
 	}
 }

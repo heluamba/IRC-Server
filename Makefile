@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    makefile                                           :+:      :+:    :+:    #
+#    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: cbarber <cbarber@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/08 10:25:40 by cbarber           #+#    #+#              #
-#    Updated: 2026/09/19 15:33:08 by misalber         ###   ########.fr        #
+#    Updated: 2026/11/12 17:25:22 by misalber         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,7 +50,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS) 
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
-	echo "$(NAME) built successfully."
+	echo "$(NAME) \033[32mbuilt successfully.\033[0m"
 
 $(OBJ_DIR)%.o: $(SRCS_DIR)%.cpp
 	mkdir -p $(OBJ_DIR)
@@ -70,13 +70,13 @@ $(BOT_OBJ_DIR)%.o: $(BOT_DIR)%.cpp
 clean:
 	rm -f $(OBJS)
 	rm -f $(BOT_OBJS)
-	echo "Object files cleaned."
+	echo "\033[36mObject files cleaned.\033[0m"
 
 fclean: clean
 	rm -f $(NAME)
 	rm -f $(BONUS_NAME)
 	rm -f $(LIBFTNAME)
-	echo "Fully cleaned project."
+	echo "\033[31mFully cleaned project.\033[0m"
 
 re: fclean all
 

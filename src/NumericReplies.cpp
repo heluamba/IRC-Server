@@ -6,7 +6,7 @@
 /*   By: misalber <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/19 15:22:28 by misalber          #+#    #+#             */
-/*   Updated: 2026/09/19 15:22:30 by misalber         ###   ########.fr       */
+/*   Updated: 2026/11/12 17:30:49 by misalber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,170 +127,124 @@ std::string NumericReplies::toManyChannels(const Client &client,
 }
 
 
-std::string NumericReplies::unavaiLResource(const Client &client,
-                                     const std::string &server,
-									 const std::string &resource)
+std::string NumericReplies::unavaiLResource(const Client &client, const std::string &server, const std::string &resource)
 {
 	std::string msg = resource + " :Resource is temporarily unavailable";
 	return make(client, server, "437", msg);
 }
 
-std::string NumericReplies::iventeOnlyChannel(const Client &client,
-                                     const std::string &server,
-									 const std::string &channel)
+std::string NumericReplies::iventeOnlyChannel(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :Cannot join channel (+i)";
 	return make(client, server, "473", msg);
 }
 
-std::string NumericReplies::channelListFull(const Client &client,
-                                     const std::string &server,
-									 const std::string &channel)
+std::string NumericReplies::channelListFull(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :Channel list is full";
 	return make(client, server, "471", msg);
 }
 
-std::string NumericReplies::badChannelKey(const Client &client,
-                                     const std::string &server,
-									 const std::string &channel)
+std::string NumericReplies::badChannelKey(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :Cannot join channel (+k)";
 	return make(client, server, "475", msg);
 }
 
 
-std::string NumericReplies::umodeUnknowFlag(const Client &client,
-                                     const std::string &server,
-									 const std::string &flag)
+std::string NumericReplies::umodeUnknowFlag(const Client &client, const std::string &server, const std::string &flag)
 {
 	std::string msg = flag + " :Unknown MODE flag";
 	return make(client, server, "501", msg);
 }
 
-std::string NumericReplies::rpl_noTopic(const Client &client,
-									  const std::string &server,
-									  const std::string &channel)
+std::string NumericReplies::rpl_noTopic(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :No topic is set";
 	return make(client, server, "331", msg);
 }
 
-std::string NumericReplies::rpl_topic(const Client &client,
-									  const std::string &server,
-									  const std::string &channel,
-									  const std::string &topic)
+std::string NumericReplies::rpl_topic(const Client &client, const std::string &server, const std::string &channel, const std::string &topic)
 {
 	std::string msg = channel + " :" + topic;
 	return make(client, server, "332", msg);
 }
 
-std::string NumericReplies::rpl_naReply(const Client &client,
-									  const std::string &server,
-									  const std::string &channel,
-									  const std::string &symbol,
-									  const std::string &members)
+std::string NumericReplies::rpl_naReply(const Client &client, const std::string &server, const std::string &channel, const std::string &symbol, const std::string &members)
 {
 	std::string msg = symbol + " " + channel + " :" + members;
 	return make(client, server, "353", msg);
 }
 
-std::string NumericReplies::rpl_endOfNames(const Client &client,
-									  const std::string &server,
-									  const std::string &channel)
+std::string NumericReplies::rpl_endOfNames(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :End of NAMES list";
 	return make(client, server, "366", msg);
 }
 
-std::string NumericReplies::rpl_channelModeis(const Client &client,
-									  const std::string &server,
-									  const std::string &channel,
-									  const std::string &modeStatus)
+std::string NumericReplies::rpl_channelModeis(const Client &client, const std::string &server, const std::string &channel, const std::string &modeStatus)
 {
 	std::string msg = channel + " " + modeStatus;
 	return make(client, server, "324", msg);
 }
 
-std::string NumericReplies::UnknownCommand(const Client &client,
-									  const std::string &server,
-									  const std::string &command)
+std::string NumericReplies::UnknownCommand(const Client &client, const std::string &server, const std::string &command)
 {
 	std::string msg = command + " :Unknown command";
 	return make(client, server, "421", msg);
 }
 
-std::string NumericReplies::notOnChannel(const Client &client,
-									  const std::string &server,
-									  const std::string &channel)
+std::string NumericReplies::notOnChannel(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :You're not on that channel";
 	return make(client, server, "442", msg);
 }
 
 
-std::string NumericReplies::canNotSendToChan(const Client &client,
-									  const std::string &server,
-									  const std::string &channel)
+std::string NumericReplies::canNotSendToChan(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :Cannot send to channel";
 	return make(client, server, "404", msg);
 }
 
-std::string NumericReplies::chaNoPrivsNeed(const Client &client,
-									  const std::string &server,
-									  const std::string &channel)
+std::string NumericReplies::chaNoPrivsNeed(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :You're not channel operator";
 	return make(client, server, "482", msg);
 }
 
 
-std::string NumericReplies::userNoTinChannel(const Client &client,
-									  		 const std::string &server,
-									  		 const std::string &channel,
-											 const std::string &nick)
+std::string NumericReplies::userNoTinChannel(const Client &client, const std::string &server, const std::string &channel, const std::string &nick)
 {
 	std::string msg = nick + " " + channel + " :They aren't on that channel";
 	return make(client, server, "441", msg);
 }
 
-std::string NumericReplies::userOnChannel(const Client &client,
-									  		 const std::string &server,
-									  		 const std::string &channel)
+std::string NumericReplies::userOnChannel(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :is already on channel";
 	return make(client, server, "443", msg);
 }
 
-std::string NumericReplies::rpl_inviting(const Client &client,
-									  		 const std::string &server,
-									  		 const std::string &channel,
-											 const std::string &nick)
+std::string NumericReplies::rpl_inviting(const Client &client, const std::string &server, const std::string &channel, const std::string &nick)
 {
 	std::string msg = channel + " " + nick;
 	return make(client, server, "341", msg);
 }
 
-std::string NumericReplies::keySet(const Client &client,
-								   const std::string &server,
-								   const std::string &channel)
+std::string NumericReplies::keySet(const Client &client, const std::string &server, const std::string &channel)
 {
 	std::string msg = channel + " :Channel key already set";
 	return make(client, server, "467", msg);
 }
 
-std::string NumericReplies::UnknownMode(const Client &client,
-								   		const std::string &server,
-								   		const std::string &channel,
-										const char &mode)
+std::string NumericReplies::UnknownMode(const Client &client, const std::string &server, const std::string &channel, const char &mode)
 {
 	std::string msg = std::string(1, mode) + " :is unknown mode char to me for " + channel;
 	return make(client, server, "472", msg);
 }
 
-std::string NumericReplies::userDontMatch(const Client &client,
-								   		  const std::string &server)
+std::string NumericReplies::userDontMatch(const Client &client, const std::string &server)
 {
 	std::string msg = " :Cannot change mode for other users";
 	return make(client, server, "502", msg);

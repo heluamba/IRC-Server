@@ -14,6 +14,8 @@
 #define PARSER_HPP
 
 #include "IRCMessage.hpp"
+#include <cctype>
+#include <cstddef>
 #include <string>
 
 class Parser {

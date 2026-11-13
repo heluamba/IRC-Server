@@ -11,9 +11,6 @@
 /* ************************************************************************** */
 
 #include "../include/Parser.hpp"
-#include <cctype>
-#include <cstddef>
-#include <string>
 
 std::string Parser::toUpper(const std::string &str) {
   std::string result;
@@ -28,9 +25,7 @@ std::string Parser::toUpper(const std::string &str) {
   return (result);
 }
 
-
-IRCMessage Parser::Parse(const std::string &line)
-{
+IRCMessage Parser::Parse(const std::string &line) {
   IRCMessage message;
   std::string input;
   size_t pos;
@@ -38,21 +33,9 @@ IRCMessage Parser::Parse(const std::string &line)
   pos = 0;
   input = line;
 
-//   if (!input.empty() && input[0] == ':') {
-//     size_t space = input.find(' ');
-
-//     if (space == std::string::npos)
-//         return message;
-
-//     message.prefix = input.substr(1, space - 1);
-//     pos = space + 1;
-//   }
-
-  if (!input.empty() && input[0] == ':')
-  {
-    size_t  space = input.find(' ');
-    if (space == std::string::npos)
-    {
+  if (!input.empty() && input[0] == ':') {
+    size_t space = input.find(' ');
+    if (space == std::string::npos) {
       message.prefix = input.substr(1, space - 1);
       pos = space + 1;
     }
@@ -61,27 +44,23 @@ IRCMessage Parser::Parse(const std::string &line)
   while (pos < input.size() && input[pos] == ' ')
     pos++;
   size_t commandEnd = input.find(' ', pos);
-  if (commandEnd == std::string::npos)
-  {
+  if (commandEnd == std::string::npos) {
     message.command = toUpper(input.substr(pos));
     return message;
   }
   message.command = toUpper(input.substr(pos, commandEnd - pos));
   pos = commandEnd + 1;
-  while (pos < input.size())
-  {
+  while (pos < input.size()) {
     while (pos < input.size() && input[pos] == ' ')
       pos++;
     if (pos >= input.size())
       break;
-    if (input[pos] == ':')
-    {
+    if (input[pos] == ':') {
       message.params.push_back(input.substr(pos + 1));
       break;
     }
     size_t paramEnd = input.find(' ', pos);
-    if (paramEnd == std::string::npos)
-    {
+    if (paramEnd == std::string::npos) {
       message.params.push_back(input.substr(pos));
       break;
     }

@@ -42,8 +42,13 @@ void handle_message::handleUser(Client *client, const IRCMessage &message)
 		return ;
 
 	size_t size = message.params.size();
+
 	if (size < 2 || size > 4)
 	{
+		client->queueMessage(NumericReplies::needMoreParams(*client, message.command, server->serv_name));
+		return ;
+	}
+	if (message.params[0].size() > 10) {
 		client->queueMessage(NumericReplies::needMoreParams(*client, message.command, server->serv_name));
 		return ;
 	}
@@ -58,6 +63,7 @@ void handle_message::handleUser(Client *client, const IRCMessage &message)
 		client->queueMessage(NumericReplies::alreadyRegistered(*client, server->serv_name));
 		return ;
 	}
+
 	client->setUsername(message.params[0]);
 	client->setRealname(message.params[size - 1]);
 	client->setPrefix(clientPrefix(client));
@@ -83,6 +89,8 @@ void handle_message::handlePass(Client *client, const IRCMessage &message)
 		return ;
 	}
 	client->queueMessage(NumericReplies::passMismatch(*client, server->serv_name));
+	server->markToRemove(true);
+	client->setToRemove(true);
 }
 
 void	handle_message::handle_part(Client *client, const IRCMessage &msg)

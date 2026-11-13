@@ -45,7 +45,7 @@ const std::string &Client::get_a_name() const
 	return realname; 
 }
 
-bool Client::isToRemove() const { return toRemove; }
+bool Client::isToRemove() const {return toRemove; }
 bool Client::isRegistered() const { return registered; }
 bool Client::isPasswordOk() const { return passwordOk; }
 bool Client::isOutputBufferEmpty() const { return outbuffer.empty(); }
@@ -56,7 +56,7 @@ void Client::setRealname(const std::string &real) { realname = real; }
 void Client::setOutBuffer(std::string buffer) {outbuffer = buffer; }
 void Client::setPrefix(const std::string &prefi){prefix = prefi; }
 
-void Client::setToRemove(bool value) { toRemove = value; }
+void Client::setToRemove(bool value) { std::cout << nickname << '\n';  toRemove = value; }
 void Client::setRegistered(bool value) { registered = value; }
 void Client::setPasswordOk(bool value) { passwordOk = value; }
 

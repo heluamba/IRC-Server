@@ -12,6 +12,9 @@ Bot::Bot(int port,
 		const std::string &channel): _nick(nick), _channel(channel)
 {
 
+	_cmds = startCMDs();
+	_cmdFunc = startCMDsFunc();
+
 	_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (_sock < 0)
     	throw std::runtime_error("Failed to create socket");
@@ -33,6 +36,7 @@ Bot::Bot(int port,
 	sendRaw("NICK " + nick);
 	sendRaw("USER BOT :B");
 	sendRaw("JOIN " + channel);
+	sendRaw("TOPIC " + channel + " The Channel Bot 🤖");
 }
 
 Bot::~Bot() {}
@@ -87,11 +91,14 @@ void	Bot::handle_line(const std::string &line)
 
 	if (line.find(" PRIVMSG ") != std::string::npos)
 	{
-		std::string command = BotUtils::extractCommand(line);
-		std::string target = BotUtils::extractTarget(line);
+		const BotMessage msg = BotUtils::parseBotMessage(line);
 
-		if(command.find("!hello") != std::string::npos) {
-			sendRaw("PRIVMSG " + _channel + " :Olá! Sou o Bot.");
+		for (size_t i = 0; i < COUNT_CMDS; i++)
+		{
+			if (msg.command == _cmds[i]) {
+				(this->*_cmdFunc[i])(msg);
+				return ;
+			}
 		}
 	}
 }
@@ -101,7 +108,7 @@ void	Bot::shutDownBot( void )
 	if (!shutDown)
 		return ;
 	std::string cmd = "QUIT";
-	sendRaw(cmd + " :Bot Bay Bay ..🤗");
+	sendRaw(cmd + " :Bot Bay Bay ..🤖");
 	close(_sock);
 	exit(0);
 }

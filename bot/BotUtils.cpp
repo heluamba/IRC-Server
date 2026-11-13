@@ -101,13 +101,30 @@ bool	BotUtils::isValidChannelName(const std::string &name)
 	return true;
 }
 
-std::string	BotUtils::extractCommand(const std::string &str)
+std::string	BotUtils::extractCommandParams(const std::string &str)
 {
 	std::string command;
+	std::string param;
+
 	size_t	cmdPos = str.find(":!");
-	if (cmdPos != std::string::npos)
+	if (cmdPos == std::string::npos)
+		return command;
+	
+	size_t cmdEnd;
+	if ((cmdEnd = str.find(" ", cmdPos)) == std::string::npos)
 		command = str.substr(cmdPos + 1);
-	return (command);
+	else
+	{
+		command = str.substr(cmdPos + 1, (cmdEnd - 1) - cmdPos);
+		while (str[cmdEnd] == ' ')
+			cmdEnd++;
+		param = str.substr(cmdEnd);
+	}
+
+	if (param.empty())
+		return (command);
+	
+	return (command + ":" + param);
 }
 
 //Try extract channel or nick target from :nick!user@host PRIVMSG #canal :!comando
@@ -115,6 +132,7 @@ std::string BotUtils::extractTarget(const  std::string &str)
 {
 	std::string target;
 	size_t targetPos = str.find("#");
+
 	if (targetPos != std::string::npos) {
 		target = str.substr(targetPos, str.find(" ", targetPos) - targetPos);
 	}
@@ -124,4 +142,30 @@ std::string BotUtils::extractTarget(const  std::string &str)
 		}
 	}
 	return (target);
+}
+
+const BotMessage	BotUtils::parseBotMessage(const std::string &line)
+{
+	BotMessage msg;
+	
+	if (line.empty())
+		return (msg);
+
+	msg.target =  extractTarget(line);
+	std::string cmd = extractCommandParams(line);
+	if ((cmd.find(':')) == std::string::npos) {
+		msg.command = cmd;
+		return (msg);
+	}
+
+	std::vector<std::string> cmdParam = BotUtils::split(cmd, ':');
+	msg.command = cmdParam[0];
+	msg.params = cmdParam[1];
+	return (msg);
+}
+
+const std::string BotUtils::toManyArguments(const BotMessage &msg)
+{
+	std::string sms = " :" + msg.command + " command too many arguments";
+	return (sms);
 }

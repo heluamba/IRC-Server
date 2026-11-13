@@ -1,7 +1,8 @@
 #ifndef BOT
 # define BOT
+# define COUNT_CMDS 3
 
-#include <csignal>
+# include <csignal>
 # include <string>
 # include <cerrno>
 # include <cstdlib>
@@ -22,10 +23,10 @@ class Bot
 		std::string _nick;
 		std::string _channel;
 
-		typedef void (Bot::*cmdsFunc)();
+		typedef void (Bot::*cmdsFunc)(const BotMessage&);
 
-		cmdsFunc	*cmdFunc;
-		std::string	*cmds;
+		cmdsFunc	*_cmdFunc;
+		std::string	*_cmds;
 		std::string	_buffer;
 		static	bool shutDown;
 
@@ -44,10 +45,10 @@ class Bot
 			const std::string &channel);
 		~Bot();
 
-		void	cmd_chat();
-		void	cmd_hello();
-		void	cmd_debug();
-
+		void	cmd_chat(const BotMessage &msg);
+		void	cmd_hello(const BotMessage &msg);
+		void	cmd_debug(const BotMessage &msg);
+		
 		void	run( void );
 		void	shutDownBot( void );
 static	void	signalHandler(int signum);

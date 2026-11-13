@@ -492,30 +492,3 @@ void	handle_message::broadcastMode(Client *client,
 	notify.exceptFd = NONE;
 	server->getChannelDomain().notifyMembersOfChannel(channel, notify);	
 }
-
-/*****  DEBUG ******/
-
-void handle_message::handle_debug(Client *client, const IRCMessage &message)
-{
-	(void)client;
-	(void)message;
-
-	#ifdef ENABLE_DEBUG
-		if (message.params.size() < 1 )
-			return ;
-		Debug debug(server);
-		if (message.params[0] == "lscl")
-			debug.listClientsOnServer();
-		else if (message.params[0] == "lscha")
-			debug.listChannelsOnServer();
-		else if (message.params[0] == "lscham")
-		{
-			if (message.params.size() < 2){
-				std::cout << "Channel Name needed!" << std::endl;
-				return ;
-			}
-			for (size_t i = 0; i < message.params.size(); i++)
-				debug.listChannelMembers(message.params[i]);
-		}
-	#endif
-}
